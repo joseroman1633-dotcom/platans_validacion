@@ -112,14 +112,32 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"] if (BASE_DIR / "static").exists() else []
 
 USE_CLOUDINARY = env_bool("USE_CLOUDINARY", RENDER)
-cloudinary_url = os.getenv("CLOUDINARY_URL")
+
+cloudinary_url = os.getenv("CLOUDINARY_URL", "").strip()
+cloudinary_cloud_name = os.getenv("CLOUDINARY_CLOUD_NAME", "").strip()
+cloudinary_api_key = os.getenv("CLOUDINARY_API_KEY", "").strip()
+cloudinary_api_secret = os.getenv("CLOUDINARY_API_SECRET", "").strip()
+
+if cloudinary_url:
+    if not cloudinary_url.startswith("cloudinary://"):
+        raise ImproperlyConfigured(
+            "CLOUDINARY_URL debe iniciar con 'cloudinary://'"
+        )
+    try:
+        parsed = cloudinary_url.replace("cloudinary://", "", 1)
+        creds, cloud_name = parsed.split("@", 1)
+        api_key, api_secret = creds.split(":", 1)
+        cloudinary_cloud_name = cloud_name.strip()
+        cloudinary_api_key = api_key.strip()
+        cloudinary_api_secret = api_secret.strip()
+    except ValueError as exc:
+        raise ImproperlyConfigured(
+            "CLOUDINARY_URL no tiene el formato correcto. "
+            "Usa: cloudinary://API_KEY:API_SECRET@CLOUD_NAME"
+        ) from exc
+
 cloudinary_is_configured = bool(
-    cloudinary_url
-    or (
-        os.getenv("CLOUDINARY_CLOUD_NAME")
-        and os.getenv("CLOUDINARY_API_KEY")
-        and os.getenv("CLOUDINARY_API_SECRET")
-    )
+    cloudinary_cloud_name and cloudinary_api_key and cloudinary_api_secret
 )
 
 MEDIA_URL = "/media/"
@@ -132,9 +150,19 @@ if USE_CLOUDINARY and not cloudinary_is_configured:
 
 if USE_CLOUDINARY:
     CLOUDINARY_STORAGE = {
+        "CLOUD_NAME": cloudinary_cloud_name,
+        "API_KEY": cloudinary_api_key,
+        "API_SECRET": cloudinary_api_secret,
         "SECURE": True,
-        "MEDIA_TAG": "platans-validacion-media",
     }
+
+    CLOUDINARY = {
+        "cloud_name": cloudinary_cloud_name,
+        "api_key": cloudinary_api_key,
+        "api_secret": cloudinary_api_secret,
+        "secure": True,
+    }
+
     default_storage_backend = "cloudinary_storage.storage.MediaCloudinaryStorage"
 else:
     MEDIA_ROOT = BASE_DIR / "media"
