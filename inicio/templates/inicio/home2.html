@@ -1,0 +1,337 @@
+{% extends "inicio/base.html" %}
+{% load static %}
+
+{% block title %}Panel | Validación de Plantas{% endblock %}
+
+{% block content %}
+<section class="dashboard-hero">
+  <div class="dashboard-hero__content">
+    <span class="dashboard-badge">
+      <span class="dashboard-badge__dot"></span>
+      Sesión iniciada
+    </span>
+
+    <h1 class="dashboard-title">
+      Hola, <span>{{ user.username }}</span>
+    </h1>
+
+    <p class="dashboard-subtitle">
+      Bienvenido al sistema de validación de plantas. Ya puedes continuar con tu proceso
+      de forma rápida, segura y organizada.
+    </p>
+
+    <div class="dashboard-status">
+      <span>🤖</span>
+      Sistema listo para trabajar
+    </div>
+
+    <div class="dashboard-actions">
+      <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button class="dashboard-btn" type="submit">
+          Cerrar sesión
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="dashboard-hero__visual">
+    <div class="assistant-card">
+      <div class="assistant-card__glow"></div>
+
+      <div class="assistant-stage">
+        <img src="{% static 'inicio/robot.gif' %}" alt="Robot asistente" class="assistant-gif">
+      </div>
+
+      <div class="assistant-pill">Bienvenido</div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .dashboard-hero{
+    position: relative;
+    max-width: 1120px;
+    margin: 22px auto 0;
+    padding: 56px 46px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, .85fr);
+    align-items: center;
+    gap: 42px;
+    border-radius: 30px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 85% 80%, rgba(27, 190, 255, .18), transparent 26%),
+      radial-gradient(circle at 90% 10%, rgba(255,255,255,.08), transparent 18%),
+      linear-gradient(135deg, #041327 0%, #051a33 45%, #082746 100%);
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow:
+      0 20px 55px rgba(0,0,0,.28),
+      inset 0 1px 0 rgba(255,255,255,.04);
+    isolation: isolate;
+  }
+
+  .dashboard-hero::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,.12), transparent 70%);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .dashboard-hero__content{
+    position: relative;
+    z-index: 2;
+  }
+
+  .dashboard-badge{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.08);
+    color: #e3edf7;
+    font-size: .98rem;
+    font-weight: 600;
+    backdrop-filter: blur(8px);
+  }
+
+  .dashboard-badge__dot{
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #17ff89;
+    box-shadow: 0 0 12px rgba(23,255,137,.9);
+  }
+
+  .dashboard-title{
+    margin: 24px 0 16px;
+    font-size: clamp(3rem, 6vw, 5.1rem);
+    line-height: .95;
+    font-weight: 900;
+    letter-spacing: -.03em;
+    color: #ffffff;
+  }
+
+  .dashboard-title span{
+    color: #17ff89;
+    text-shadow: 0 0 16px rgba(23,255,137,.18);
+  }
+
+  .dashboard-subtitle{
+    max-width: 630px;
+    margin: 0 0 24px;
+    font-size: 1.18rem;
+    line-height: 1.75;
+    color: rgba(235,243,251,.9);
+  }
+
+  .dashboard-status{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 30px;
+    padding: 12px 16px;
+    border-radius: 16px;
+    background: rgba(23,255,137,.10);
+    border: 1px solid rgba(23,255,137,.18);
+    color: #d7ffe8;
+    font-weight: 700;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.05);
+  }
+
+  .dashboard-actions{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .dashboard-actions form{
+    margin: 0;
+  }
+
+  .dashboard-btn{
+    appearance: none;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.05);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 14px 22px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
+    box-shadow: 0 10px 22px rgba(0,0,0,.16);
+  }
+
+  .dashboard-btn:hover{
+    transform: translateY(-2px);
+    background: rgba(255,255,255,.08);
+    border-color: rgba(255,255,255,.20);
+    box-shadow: 0 14px 30px rgba(0,0,0,.22);
+  }
+
+  .dashboard-hero__visual{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .assistant-card{
+    position: relative;
+    width: min(100%, 360px);
+    min-height: 370px;
+    padding: 26px 24px 78px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 30px;
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.025));
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.05),
+      0 18px 44px rgba(0,0,0,.24);
+    backdrop-filter: blur(12px);
+    overflow: hidden;
+  }
+
+  .assistant-card__glow{
+    position: absolute;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(23,255,137,.16), rgba(54,141,255,.14) 42%, transparent 72%);
+    filter: blur(10px);
+    z-index: 1;
+  }
+
+  .assistant-stage{
+    position: relative;
+    z-index: 2;
+    padding: 18px 18px 0;
+    border-radius: 28px;
+    background: linear-gradient(180deg, #ffffff 0%, #f3f7fd 100%);
+    box-shadow:
+      0 18px 34px rgba(0,0,0,.16),
+      inset 0 1px 0 rgba(255,255,255,.95);
+    animation: stageFloat 3.8s ease-in-out infinite;
+  }
+
+  .assistant-stage::before{
+    content: "";
+    position: absolute;
+    inset: -10px;
+    border-radius: 34px;
+    border: 1px solid rgba(255,255,255,.22);
+    opacity: .35;
+    pointer-events: none;
+  }
+
+  .assistant-gif{
+    display: block;
+    width: 180px;
+    max-width: 100%;
+    object-fit: contain;
+    image-rendering: auto;
+  }
+
+  .assistant-pill{
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    z-index: 3;
+    padding: 12px 18px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.96);
+    color: #1b2734;
+    font-size: .98rem;
+    font-weight: 800;
+    box-shadow: 0 10px 24px rgba(0,0,0,.18);
+    white-space: nowrap;
+  }
+
+  @keyframes stageFloat{
+    0%,100%{ transform: translateY(0px); }
+    50%{ transform: translateY(-8px); }
+  }
+
+  @media (max-width: 980px){
+    .dashboard-hero{
+      grid-template-columns: 1fr;
+      padding: 34px 24px;
+      gap: 28px;
+    }
+
+    .dashboard-hero__visual{
+      order: -1;
+    }
+
+    .assistant-card{
+      width: min(100%, 320px);
+      min-height: 330px;
+    }
+
+    .assistant-gif{
+      width: 160px;
+    }
+
+    .dashboard-title{
+      font-size: 3.2rem;
+    }
+
+    .dashboard-subtitle{
+      font-size: 1.04rem;
+    }
+  }
+
+  @media (max-width: 560px){
+    .dashboard-hero{
+      padding: 26px 18px;
+      border-radius: 24px;
+    }
+
+    .dashboard-title{
+      font-size: 2.5rem;
+    }
+
+    .dashboard-subtitle{
+      line-height: 1.65;
+    }
+
+    .assistant-card{
+      width: 100%;
+      min-height: 300px;
+      padding: 22px 18px 72px;
+    }
+
+    .assistant-stage{
+      padding: 14px 14px 0;
+    }
+
+    .assistant-gif{
+      width: 145px;
+    }
+
+    .assistant-pill{
+      font-size: .9rem;
+      padding: 10px 15px;
+    }
+
+    .dashboard-btn{
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+{% endblock %}

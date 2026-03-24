@@ -1,0 +1,1049 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Validación de Plantas{% endblock %}</title>
+
+  <style>
+    :root{
+      --bg-0: #0b0f14;
+      --bg-1: #111827;
+      --card: rgba(17, 24, 39, 0.65);
+      --card-border: rgba(255,255,255,0.08);
+      --text: #e5e7eb;
+      --muted: rgba(229,231,235,0.75);
+      --accent: #00ff5e;
+
+      --danger: rgba(255,80,80,.14);
+      --danger-border: rgba(255,80,80,.35);
+      --focus: rgba(0,255,94,.22);
+      --focus-border: rgba(0,255,94,.55);
+
+      --footer-surface: #e7ebf1;
+      --footer-surface-2: #dfe4eb;
+      --footer-text: #1f2937;
+      --footer-muted: #5b6578;
+      --footer-border: rgba(15,23,42,0.10);
+    }
+
+    *{ box-sizing:border-box; }
+
+    html{
+      scroll-behavior: smooth;
+    }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 20% 0%, rgba(0,255,94,0.08), transparent 60%),
+        radial-gradient(900px 500px at 80% 10%, rgba(56,191,248,0.12), transparent 60%),
+        var(--bg-0);
+      color: var(--text);
+    }
+
+    a{ color:inherit; }
+
+    .container{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 18px;
+    }
+
+    header{
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(0,0,0,0.6);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    .header__inner{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+      padding: 14px 0;
+      position: relative;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      min-width: 0;
+    }
+
+    .brand__dot{
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      background: var(--accent);
+      box-shadow: 0 0 16px rgba(0,255,94,0.4);
+      flex: 0 0 auto;
+    }
+
+    .site-nav{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .navlink{
+      padding: 8px 10px;
+      border-radius: 10px;
+      text-decoration: none;
+      color: rgba(255,255,255,0.88);
+      border: 1px solid transparent;
+      transition: background .12s ease, border-color .12s ease, box-shadow .12s ease;
+      font-weight: 650;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .navlink:hover{
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.10);
+    }
+
+    .navlink.active{
+      background: rgba(0,255,94,0.12);
+      border-color: rgba(0,255,94,0.28);
+      color: rgba(255,255,255,0.95);
+      box-shadow: 0 0 0 3px rgba(0,255,94,0.08);
+    }
+
+    .menu-toggle{
+      display:none;
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      cursor: pointer;
+      padding: 0;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap: 5px;
+      transition: background .15s ease, border-color .15s ease, transform .15s ease;
+    }
+
+    .menu-toggle:hover{
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    .menu-toggle__line{
+      width: 20px;
+      height: 2px;
+      border-radius: 999px;
+      background: #fff;
+      transition: transform .2s ease, opacity .2s ease;
+    }
+
+    .menu-toggle.is-open .menu-toggle__line:nth-child(1){
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .menu-toggle.is-open .menu-toggle__line:nth-child(2){
+      opacity: 0;
+    }
+
+    .menu-toggle.is-open .menu-toggle__line:nth-child(3){
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    main{
+      flex:1;
+      padding: 22px 0 28px;
+    }
+
+    .accent{ color: var(--accent); }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+    }
+
+    .pill{
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.9);
+      font-size: 13px;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      text-decoration:none;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.12);
+      transition: transform .12s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+      color: white;
+      cursor: pointer;
+    }
+
+    .btn:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 10px 18px rgba(0,0,0,0.25);
+    }
+
+    .btn--primary{
+      background: rgba(0, 255, 94, 0.18);
+      border-color: rgba(0, 255, 94, 0.35);
+    }
+
+    .btn--primary:hover{
+      background: rgba(0, 255, 94, 0.25);
+      border-color: rgba(0, 255, 94, 0.55);
+    }
+
+    .btn--ghost{
+      background: rgba(255,255,255,0.04);
+    }
+
+    .btn--ghost:hover{
+      background: rgba(255,255,255,0.08);
+    }
+
+    .btn--full{
+      width: 100%;
+      margin-top: 14px;
+    }
+
+    .dropdown{
+      position: relative;
+      display: inline-block;
+    }
+
+    .dropdown__menu{
+      display: none;
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      min-width: 240px;
+      padding: 8px;
+      border-radius: 14px;
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: 0 16px 30px rgba(0,0,0,0.35);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+    }
+
+    .dropdown.is-open .dropdown__menu{
+      display: block;
+    }
+
+    .dropdown__menu::before{
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      top:-10px;
+      height:10px;
+    }
+
+    .dropdown__item{
+      display: block;
+      padding: 10px 12px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: rgba(255,255,255,0.90);
+      border: 1px solid transparent;
+      transition: background .12s ease, border-color .12s ease;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    .dropdown__item:hover{
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.10);
+    }
+
+    .hero{
+      position: relative;
+      padding: 28px;
+      overflow: hidden;
+    }
+
+    .hero__content{
+      position: relative;
+      z-index: 2;
+      max-width: 720px;
+    }
+
+    .hero__title{
+      margin: 10px 0 10px;
+      font-size: clamp(28px, 3.2vw, 42px);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      color: white;
+    }
+
+    .hero__subtitle{
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+      max-width: 62ch;
+    }
+
+    .hero__actions{
+      margin-top: 18px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .blob{
+      position: absolute;
+      border-radius: 999px;
+      opacity: 0.85;
+      pointer-events: none;
+    }
+
+    .blob--1{
+      right: -80px;
+      top: -90px;
+      width: 260px;
+      height: 260px;
+      background: rgba(255,255,255,0.10);
+      filter: blur(1px);
+    }
+
+    .blob--2{
+      right: 30px;
+      bottom: -110px;
+      width: 300px;
+      height: 300px;
+      background: rgba(56, 191, 248, 0.22);
+    }
+
+    .grid{
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .feature{
+      padding: 20px;
+      text-align: left;
+      transition: transform .15s ease, border-color .15s ease, background .15s ease;
+    }
+
+    .feature:hover{
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.16);
+      background: rgba(17, 24, 39, 0.78);
+    }
+
+    .feature__title{
+      margin: 0 0 8px;
+      font-size: 18px;
+      color: white;
+    }
+
+    .feature__text{
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      min-height: 44px;
+    }
+
+    .content-card{
+      padding: 22px;
+    }
+
+    .content-card h1{
+      margin: 0 0 10px;
+      color: white;
+      letter-spacing: -0.02em;
+    }
+
+    .content-card p,
+    .content-card li{
+      color: var(--muted);
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    .divider{
+      border: 0;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      margin: 18px 0;
+    }
+
+    .feature__img{
+      width: 250px;
+      height: 70px;
+      object-fit: contain;
+      margin-bottom: 20px;
+      display: block;
+      filter: drop-shadow(0 0 8px rgba(0,255,94,0.25));
+    }
+
+    .auth{
+      min-height: calc(100vh - 170px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 28px 0;
+    }
+
+    .auth__card{
+      width: min(520px, 96vw);
+      padding: 22px;
+    }
+
+    .auth__title{
+      margin: 0 0 6px;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      color: white;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+    }
+
+    .auth__subtitle{
+      margin: 0 0 16px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .auth__form{
+      display: grid;
+      gap: 14px;
+    }
+
+    .auth__field{
+      display:flex;
+      flex-direction:column;
+      gap: 6px;
+    }
+
+    .auth__label{
+      font-weight: 750;
+      font-size: 13px;
+      color: rgba(255,255,255,0.90);
+    }
+
+    .auth__input{
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(0,0,0,0.25);
+      color: #fff;
+      outline: none;
+    }
+
+    .auth__input:focus{
+      border-color: var(--focus-border);
+      box-shadow: 0 0 0 3px var(--focus);
+    }
+
+    .auth__alert{
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--danger);
+      border: 1px solid var(--danger-border);
+      margin: 12px 0 12px;
+      font-size: 14px;
+    }
+
+    .auth__help{
+      font-size: 12px;
+      color: rgba(229,231,235,0.70);
+      line-height: 1.5;
+      margin-top: 2px;
+    }
+
+    .auth__error{
+      font-size: 12.5px;
+      color: #ffb1b1;
+      margin-top: 2px;
+    }
+
+    .auth__footer{
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      text-align:center;
+      color: rgba(229,231,235,0.80);
+      font-size: 14px;
+    }
+
+    .auth__link{
+      color: #7CFFB2;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .auth__link:hover{
+      text-decoration: underline;
+    }
+
+    .nav-user{
+      color: rgba(255,255,255,0.85);
+      font-weight: 750;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .nav-form{
+      display:inline;
+      margin:0;
+    }
+
+    .site-footer{
+      padding: 26px 0 30px;
+    }
+
+    .site-footer__panel{
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(180deg, var(--footer-surface) 0%, var(--footer-surface-2) 100%);
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 28px;
+      box-shadow:
+        0 26px 50px rgba(0,0,0,0.24),
+        inset 0 1px 0 rgba(255,255,255,0.55);
+    }
+
+    .site-footer__panel::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(420px 180px at 0% 100%, rgba(0,255,94,0.06), transparent 70%),
+        radial-gradient(360px 180px at 100% 0%, rgba(56,191,248,0.08), transparent 72%);
+      pointer-events:none;
+    }
+
+    .site-footer__inner{
+      position: relative;
+      z-index: 1;
+      padding: 30px 30px 18px;
+    }
+
+    .site-footer__grid{
+      display:grid;
+      grid-template-columns: minmax(280px, 1.25fr) minmax(180px, .85fr) minmax(230px, 1fr) minmax(220px, .95fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .site-footer__brand{
+      display:grid;
+      grid-template-columns: 86px 1fr;
+      gap: 18px;
+      align-items: start;
+      min-width: 0;
+    }
+
+    .site-footer__logo-box{
+      width: 84px;
+      height: 84px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.82);
+      border: 1px solid rgba(15,23,42,0.08);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:
+        0 8px 18px rgba(15,23,42,0.12),
+        inset 0 1px 0 rgba(255,255,255,0.65);
+      margin-top: 22px;
+    }
+
+    .site-footer__logo{
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      display:block;
+    }
+
+    .site-footer__brand-copy{
+      min-width: 0;
+    }
+
+    .site-footer__eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #127b53;
+    }
+
+    .site-footer__eyebrow::before{
+      content:"";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #00d16d;
+      box-shadow: 0 0 10px rgba(0,209,109,.35);
+      flex: 0 0 auto;
+    }
+
+    .site-footer__column{
+      min-width: 0;
+      padding-left: 16px;
+      border-left: 1px solid rgba(15,23,42,0.08);
+    }
+
+    .site-footer__title{
+      margin: 0 0 12px;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--footer-text);
+      letter-spacing: -0.01em;
+    }
+
+    .site-footer__text{
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--footer-muted);
+      text-align: justify;
+      text-align-last: left;
+    }
+
+    .site-footer__link{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      margin-top: 14px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 800;
+      color: #102a43;
+      padding-bottom: 2px;
+      border-bottom: 1px solid rgba(16,42,67,0.18);
+      transition: color .15s ease, border-color .15s ease, transform .15s ease;
+    }
+
+    .site-footer__link:hover{
+      color: #0f7a4b;
+      border-color: rgba(15,122,75,0.45);
+      transform: translateX(2px);
+    }
+
+    .site-footer__bottom{
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(15,23,42,0.08);
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap: 18px 26px;
+      flex-wrap: wrap;
+    }
+
+    .site-footer__copy{
+      margin: 0;
+      font-size: 13px;
+      font-weight: 800;
+      color: #1f2937;
+    }
+
+    .site-footer__legal{
+      margin: 0;
+      max-width: 720px;
+      font-size: 13px;
+      line-height: 1.75;
+      color: #667085;
+      text-align: justify;
+      text-align-last: left;
+    }
+
+    @media (max-width: 1024px){
+      .site-footer__grid{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .site-footer__column{
+        padding-left: 0;
+        border-left: none;
+      }
+    }
+
+    @media (max-width: 860px){
+      .header__inner{
+        flex-wrap: wrap;
+      }
+
+      .menu-toggle{
+        display:flex;
+        margin-left: auto;
+      }
+
+      .site-nav{
+        display:none;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        margin-top: 12px;
+        padding: 14px;
+        border-radius: 18px;
+        background: rgba(17, 24, 39, 0.95);
+        border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 16px 30px rgba(0,0,0,0.30);
+      }
+
+      .site-nav.is-open{
+        display:flex;
+      }
+
+      .site-nav .navlink,
+      .site-nav .btn,
+      .site-nav .nav-user{
+        width: 100%;
+      }
+
+      .site-nav .navlink,
+      .site-nav .btn{
+        justify-content: flex-start;
+      }
+
+      .nav-user{
+        display:block;
+      }
+
+      .nav-form{
+        display:block;
+        width:100%;
+      }
+
+      .nav-form .btn{
+        width:100%;
+      }
+
+      .dropdown{
+        width: 100%;
+      }
+
+      .dropdown > .navlink{
+        width: 100%;
+        text-align: left;
+      }
+
+      .dropdown__menu{
+        position: static;
+        top: auto;
+        left: auto;
+        min-width: 100%;
+        margin-top: 8px;
+        box-shadow: none;
+        background: rgba(255,255,255,0.03);
+      }
+
+      .dropdown__menu::before{
+        display:none;
+      }
+    }
+
+    @media (max-width: 720px){
+      .site-footer{
+        padding: 18px 0 22px;
+      }
+
+      .site-footer__inner{
+        padding: 22px 18px 16px;
+      }
+
+      .site-footer__grid{
+        grid-template-columns: 1fr;
+        gap: 22px;
+      }
+
+      .site-footer__brand{
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .site-footer__logo-box{
+        margin-top: 10px;
+      }
+
+      .site-footer__bottom{
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="container">
+    <div class="header__inner">
+      <div class="brand">
+        <span class="brand__dot"></span>
+        <span>Plantas Validación</span>
+      </div>
+
+      <button
+        class="menu-toggle"
+        id="menuToggle"
+        type="button"
+        aria-label="Abrir menú"
+        aria-controls="siteNav"
+        aria-expanded="false">
+        <span class="menu-toggle__line"></span>
+        <span class="menu-toggle__line"></span>
+        <span class="menu-toggle__line"></span>
+      </button>
+
+      <nav class="site-nav" id="siteNav">
+        <a class="navlink {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+           href="{% url 'home' %}">
+          Inicio
+        </a>
+
+        <a class="navlink {% if request.resolver_match.url_name == 'prueba' %}active{% endif %}"
+           href="{% url 'prueba' %}">
+          Prueba
+        </a>
+
+        <div class="dropdown" id="aboutDropdown">
+          <button class="navlink {% if request.resolver_match.url_name == 'about' %}active{% endif %}"
+                  type="button"
+                  id="aboutBtn"
+                  aria-haspopup="true"
+                  aria-expanded="false">
+            Acerca de ⬇
+          </button>
+
+          <div class="dropdown__menu" role="menu" aria-labelledby="aboutBtn">
+            <a class="dropdown__item" href="{% url 'about' %}" role="menuitem">
+              📖 Información general
+            </a>
+
+            <a class="dropdown__item"
+               href="https://cenidet.tecnm.mx/"
+               target="_blank"
+               rel="noopener noreferrer"
+               role="menuitem">
+              🏫 TecNm (CENIDET)
+            </a>
+          </div>
+        </div>
+
+        {% if user.is_authenticated %}
+          <span class="nav-user">👤 {{ user.username }}</span>
+
+          <form action="{% url 'logout' %}" method="post" class="nav-form">
+            {% csrf_token %}
+            <button class="btn btn--ghost" type="submit">Cerrar sesión</button>
+          </form>
+
+          {% if user.is_staff %}
+            <a href="/admin/" class="btn btn--primary">Admin</a>
+          {% endif %}
+        {% else %}
+          <a class="btn btn--primary" href="{% url 'login' %}">Iniciar sesión</a>
+          <a class="btn btn--ghost" href="{% url 'register' %}">Registrarse</a>
+        {% endif %}
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="site-footer__panel">
+      <div class="site-footer__inner">
+        <div class="site-footer__grid">
+
+          <div class="site-footer__brand">
+            <div class="site-footer__logo-box">
+              <img
+                src="{% static 'inicio/logo.png' %}"
+                alt="Logo Plantas Validación"
+                class="site-footer__logo"
+              >
+            </div>
+
+            <div class="site-footer__brand-copy">
+              <span class="site-footer__eyebrow">Plataforma institucional</span>
+              <p class="site-footer__text">
+                Plataforma orientada a la validación y análisis de imágenes con enfoque
+                académico, tecnológico y de consulta institucional.
+              </p>
+            </div>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Derechos de autor</h4>
+            <p class="site-footer__text">
+              © {% now "Y" %} Tecnológico Nacional de México (CENIDET).
+              Todos los derechos reservados.
+            </p>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Privacidad y uso</h4>
+            <p class="site-footer__text">
+              Este sitio es de acceso libre según sea su necesidad. Sin embargo,
+              en caso de utilizar, compartir o referenciar su contenido,
+              se recomienda conservar la referencia institucional correspondiente.
+            </p>
+          </div>
+
+          <div class="site-footer__column">
+            <h4 class="site-footer__title">Contacto</h4>
+            <p class="site-footer__text">
+              Si desea contactarnos o conocer más información institucional,
+              puede visitar el portal oficial del Tecnológico Nacional de México (CENIDET).
+            </p>
+            <a
+              class="site-footer__link"
+              href="https://cenidet.tecnm.mx/"
+              target="_blank"
+              rel="noopener noreferrer">
+              Visitar portal oficial
+            </a>
+          </div>
+
+        </div>
+
+        <div class="site-footer__bottom">
+          <p class="site-footer__copy">
+            © {% now "Y" %} CENIDET · Validación de Plantas
+          </p>
+
+          <p class="site-footer__legal">
+            Uso libre para consulta, validación y apoyo académico.
+            Para difusión o referencia del contenido.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    const dropdown = document.getElementById("aboutDropdown");
+    const aboutBtn = document.getElementById("aboutBtn");
+    const menuToggle = document.getElementById("menuToggle");
+    const siteNav = document.getElementById("siteNav");
+    const mobileBreakpoint = 860;
+
+    function isMobile() {
+      return window.innerWidth <= mobileBreakpoint;
+    }
+
+    function setDropdownOpen(isOpen) {
+      if (!dropdown || !aboutBtn) return;
+      dropdown.classList.toggle("is-open", isOpen);
+      aboutBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    }
+
+    function setMenuOpen(isOpen) {
+      if (!menuToggle || !siteNav) return;
+      siteNav.classList.toggle("is-open", isOpen);
+      menuToggle.classList.toggle("is-open", isOpen);
+      menuToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    }
+
+    if (aboutBtn && dropdown) {
+      aboutBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        setDropdownOpen(!dropdown.classList.contains("is-open"));
+      });
+
+      dropdown.addEventListener("click", function (e) {
+        e.stopPropagation();
+      });
+    }
+
+    if (menuToggle && siteNav) {
+      menuToggle.addEventListener("click", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        setMenuOpen(!siteNav.classList.contains("is-open"));
+      });
+
+      siteNav.querySelectorAll("a").forEach(function (link) {
+        link.addEventListener("click", function () {
+          if (isMobile()) {
+            setMenuOpen(false);
+            setDropdownOpen(false);
+          }
+        });
+      });
+
+      siteNav.querySelectorAll("form").forEach(function (form) {
+        form.addEventListener("submit", function () {
+          if (isMobile()) {
+            setMenuOpen(false);
+            setDropdownOpen(false);
+          }
+        });
+      });
+    }
+
+    document.addEventListener("click", function () {
+      setDropdownOpen(false);
+      if (isMobile()) {
+        setMenuOpen(false);
+      }
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        setDropdownOpen(false);
+        setMenuOpen(false);
+      }
+    });
+
+    window.addEventListener("resize", function () {
+      if (!isMobile()) {
+        setMenuOpen(false);
+      }
+      setDropdownOpen(false);
+    });
+  })();
+</script>
+</body>
+</html>

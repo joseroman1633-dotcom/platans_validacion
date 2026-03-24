@@ -1,0 +1,552 @@
+{% extends "inicio/base.html" %}
+{% block title %}Prueba pública{% endblock %}
+
+{% block content %}
+<script>
+  document.documentElement.classList.add('js');
+</script>
+
+<section class="public-test">
+  <div class="public-test__card">
+
+    {% if sin_imagenes %}
+      <span class="public-test__badge">Prueba pública</span>
+      <h2 class="public-test__title">No hay imágenes disponibles</h2>
+      <p class="public-test__subtitle">
+        Actualmente no existen imágenes activas para realizar la prueba.
+      </p>
+
+      <div class="public-test__actions">
+        <a class="public-test__button public-test__button--ghost" href="{% url 'prueba' %}">
+          Volver
+        </a>
+      </div>
+
+    {% elif mostrar_feedback %}
+      <span class="public-test__badge">Resultado</span>
+      <h2 class="public-test__title">Resultado de la respuesta</h2>
+      <p class="public-test__subtitle">
+        Imagen {{ numero_actual }} de {{ total }}
+      </p>
+
+      <div class="public-test__image-wrap">
+        <img
+          src="{{ imagen.imagen.url }}"
+          alt="{{ imagen.nombre }}"
+          class="public-test__image"
+        >
+      </div>
+
+      <div class="public-test__summary">
+        <p><strong>Tu respuesta:</strong> {{ respuesta_usuario }}</p>
+        <p><strong>Respuesta correcta:</strong> {{ respuesta_correcta }}</p>
+        <p>
+          <strong>Resultado:</strong>
+          {% if es_correcta %}
+            <span class="public-test__status public-test__status--ok">Correcta</span>
+          {% else %}
+            <span class="public-test__status public-test__status--error">Incorrecta</span>
+          {% endif %}
+        </p>
+      </div>
+
+      <div class="public-test__actions">
+        <a class="public-test__button public-test__button--primary" href="{% url 'iniciar_prueba_publica' %}">
+          Continuar
+        </a>
+      </div>
+
+    {% elif seleccionar_destinatario %}
+      <span class="public-test__badge">Finalizar prueba</span>
+      <h2 class="public-test__title">Completa tus datos</h2>
+      <p class="public-test__subtitle">
+        Total: {{ total }} | Correctas: {{ correctas }} | Incorrectas: {{ incorrectas }}
+      </p>
+
+      <form method="post" class="public-test__form">
+        {% csrf_token %}
+        <input type="hidden" name="accion" value="finalizar">
+
+        <div class="public-test__field">
+          <label class="public-test__label">Nombre</label>
+          {{ form_participante.nombre }}
+          {% if form_participante.nombre.errors %}
+            <div class="public-test__error">{{ form_participante.nombre.errors|striptags }}</div>
+          {% endif %}
+        </div>
+
+        <div class="public-test__field">
+          <label class="public-test__label">Correo electrónico</label>
+          {{ form_participante.correo }}
+          {% if form_participante.correo.errors %}
+            <div class="public-test__error">{{ form_participante.correo.errors|striptags }}</div>
+          {% endif %}
+        </div>
+
+        <div class="public-test__field">
+          <label class="public-test__label">Edad</label>
+          {{ form_participante.edad }}
+          {% if form_participante.edad.errors %}
+            <div class="public-test__error">{{ form_participante.edad.errors|striptags }}</div>
+          {% endif %}
+        </div>
+
+        <div class="public-test__field">
+          <label class="public-test__label">Sexo</label>
+          {{ form_participante.sexo }}
+          {% if form_participante.sexo.errors %}
+            <div class="public-test__error">{{ form_participante.sexo.errors|striptags }}</div>
+          {% endif %}
+        </div>
+
+        <div class="public-test__field">
+          <label class="public-test__label">Nivel de estudio</label>
+          {{ form_participante.nivel_estudio }}
+          {% if form_participante.nivel_estudio.errors %}
+            <div class="public-test__error">{{ form_participante.nivel_estudio.errors|striptags }}</div>
+          {% endif %}
+        </div>
+
+        <div class="public-test__field public-test__field--center">
+          <label class="public-test__label public-test__label--center">Enviar a</label>
+
+          <div class="public-test__choice-group">
+            <input
+              type="radio"
+              id="destinatario_jorge"
+              name="destinatario"
+              value="DR_JORGE"
+              class="public-test__choice-input"
+              required
+            >
+            <label for="destinatario_jorge" class="public-test__choice">
+              Dr. Jorge
+            </label>
+
+            <input
+              type="radio"
+              id="destinatario_luciano"
+              name="destinatario"
+              value="LUCIANO"
+              class="public-test__choice-input"
+            >
+            <label for="destinatario_luciano" class="public-test__choice">
+              Luciano
+            </label>
+          </div>
+        </div>
+
+        <div class="public-test__actions">
+          <button type="submit" class="public-test__button public-test__button--primary public-test__button--full">
+            Enviar resultados
+          </button>
+        </div>
+      </form>
+
+    {% elif prueba_terminada %}
+      <span class="public-test__badge">Prueba finalizada</span>
+      <h2 class="public-test__title">Prueba enviada correctamente</h2>
+      <p class="public-test__subtitle">
+        Gracias {% if participante %}{{ participante.nombre }}{% endif %}. Tus resultados fueron guardados.
+      </p>
+
+      <div class="public-test__grid">
+        <div class="public-test__summary">
+          <p><strong>Total:</strong> {{ total }}</p>
+          <p><strong>Correctas:</strong> {{ correctas }}</p>
+          <p><strong>Incorrectas:</strong> {{ incorrectas }}</p>
+        </div>
+
+        <div class="public-test__summary">
+          <p>
+            <strong>Destinatario:</strong>
+            {% if destinatario == "DR_JORGE" %}
+              Dr. Jorge
+            {% else %}
+              Luciano
+            {% endif %}
+          </p>
+        </div>
+      </div>
+
+      <div class="public-test__actions">
+        <a class="public-test__button public-test__button--primary" href="{% url 'iniciar_prueba_publica' %}">
+          Iniciar otra prueba
+        </a>
+       
+        <a class="public-test__button public-test__button--ghost" href="{% url 'prueba' %}">
+          Volver al módulo de pruebas
+        </a>
+      </div>
+
+    {% elif imagen %}
+      <span class="public-test__badge">Prueba pública</span>
+      <h2 class="public-test__title">Clasificación de imágenes</h2>
+      <p class="public-test__subtitle">
+        Observa la imagen y selecciona la opción que consideres correcta.
+      </p>
+
+      <p class="public-test__progress">
+        Imagen {{ numero_actual }} de {{ total }}
+      </p>
+
+      <div class="public-test__image-wrap">
+        <img
+          src="{{ imagen.imagen.url }}"
+          alt="{{ imagen.nombre }}"
+          class="public-test__image"
+        >
+      </div>
+
+      <form method="post" class="public-test__form js-auto-submit-form">
+        {% csrf_token %}
+        <input type="hidden" name="accion" value="responder">
+        <input type="hidden" name="imagen_id" value="{{ imagen.id }}">
+
+        <div class="public-test__field public-test__field--center">
+          <label class="public-test__label public-test__label--center">
+            Selecciona una respuesta
+          </label>
+
+          <div class="public-test__choice-group">
+            <input
+              type="radio"
+              id="publica_respuesta_ia"
+              name="respuesta"
+              value="IA"
+              class="public-test__choice-input js-auto-submit-input"
+              required
+            >
+            <label for="publica_respuesta_ia" class="public-test__choice">IA</label>
+
+            <input
+              type="radio"
+              id="publica_respuesta_sintetica"
+              name="respuesta"
+              value="NO_IA"
+              class="public-test__choice-input js-auto-submit-input"
+            >
+            <label for="publica_respuesta_sintetica" class="public-test__choice">
+              SINTÉTICA
+            </label>
+          </div>
+        </div>
+
+        <div class="public-test__actions public-test__actions--fallback">
+          <button type="submit" class="public-test__button public-test__button--primary">
+            Continuar
+          </button>
+        </div>
+      </form>
+
+    {% else %}
+      <span class="public-test__badge">Prueba pública</span>
+      <h2 class="public-test__title">No se pudo cargar la prueba</h2>
+      <p class="public-test__subtitle">Intenta nuevamente.</p>
+
+      <div class="public-test__actions">
+        <a class="public-test__button public-test__button--primary" href="{% url 'prueba' %}">
+          Volver
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+<style>
+  .public-test{
+    min-height: calc(100vh - 140px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 56px 16px;
+  }
+
+  .public-test__card{
+    width: min(920px, 100%);
+    background: rgba(8, 13, 24, .72);
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 22px;
+    padding: 30px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .28);
+  }
+
+  .public-test__badge{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #dbe4ff;
+    background: rgba(91, 124, 255, .12);
+    border: 1px solid rgba(91, 124, 255, .35);
+    margin-bottom: 14px;
+  }
+
+  .public-test__title{
+    margin: 0 0 10px;
+    font-size: clamp(28px, 3vw, 40px);
+    color: #ffffff;
+  }
+
+  .public-test__subtitle{
+    margin: 0 0 18px;
+    color: rgba(255, 255, 255, .74);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  .public-test__progress{
+    margin: 0 0 18px;
+    text-align: center;
+    color: #8ea8ff;
+    font-weight: 700;
+  }
+
+  .public-test__image-wrap{
+    display: flex;
+    justify-content: center;
+    margin: 24px 0;
+  }
+
+  .public-test__image{
+    width: auto;
+    max-width: 100%;
+    max-height: 420px;
+    object-fit: contain;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, .10);
+    background: rgba(255, 255, 255, .04);
+    padding: 8px;
+  }
+
+  .public-test__form{
+    margin-top: 10px;
+  }
+
+  .public-test__field{
+    margin-bottom: 18px;
+  }
+
+  .public-test__field--center{
+    text-align: center;
+  }
+
+  .public-test__label{
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 700;
+    color: #ffffff;
+  }
+
+  .public-test__label--center{
+    text-align: center;
+  }
+
+  .public-test__field input:not(.public-test__choice-input),
+  .public-test__field select,
+  .public-test__field textarea{
+    width: 100%;
+    padding: 13px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    background: rgba(255, 255, 255, .06);
+    color: #ffffff;
+    outline: none;
+    transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
+  }
+
+  .public-test__field input:not(.public-test__choice-input):focus,
+  .public-test__field select:focus,
+  .public-test__field textarea:focus{
+    border-color: rgba(91, 124, 255, .70);
+    box-shadow: 0 0 0 3px rgba(91, 124, 255, .16);
+    background: rgba(255, 255, 255, .08);
+  }
+
+  .public-test__field select option{
+    color: #0b1220;
+  }
+
+  .public-test__choice-group{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .public-test__choice-input{
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .public-test__choice{
+    min-width: 150px;
+    padding: 14px 22px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .06);
+    border: 1px solid rgba(255, 255, 255, .12);
+    color: #ffffff;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    transition: transform .2s ease, background .25s ease, border-color .25s ease, box-shadow .25s ease;
+  }
+
+  .public-test__choice:hover{
+    background: rgba(255, 255, 255, .10);
+    transform: translateY(-1px);
+  }
+
+  .public-test__choice-input:checked + .public-test__choice{
+    background: rgba(91, 124, 255, .18);
+    border-color: rgba(91, 124, 255, .72);
+    box-shadow: 0 0 0 3px rgba(91, 124, 255, .18);
+    color: #ffffff;
+  }
+
+  .public-test__choice-input:focus-visible + .public-test__choice{
+    box-shadow: 0 0 0 3px rgba(91, 124, 255, .18);
+  }
+
+  .public-test__actions{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+  }
+
+  .public-test__button{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 180px;
+    padding: 13px 22px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .2s ease, background .25s ease, border-color .25s ease, box-shadow .25s ease;
+  }
+
+  .public-test__button:hover{
+    transform: translateY(-1px);
+  }
+
+  .public-test__button--primary{
+    background: rgba(91, 124, 255, .18);
+    border-color: rgba(91, 124, 255, .40);
+    color: #ffffff;
+  }
+
+  .public-test__button--primary:hover{
+    background: rgba(91, 124, 255, .26);
+    box-shadow: 0 12px 24px rgba(91, 124, 255, .18);
+  }
+
+  .public-test__button--ghost{
+    background: rgba(255, 255, 255, .06);
+    border-color: rgba(255, 255, 255, .12);
+    color: #ffffff;
+  }
+
+  .public-test__button--ghost:hover{
+    background: rgba(255, 255, 255, .10);
+  }
+
+  .public-test__button--full{
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .public-test__summary{
+    background: rgba(255, 255, 255, .04);
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 16px;
+    padding: 18px;
+    color: rgba(255, 255, 255, .85);
+    line-height: 1.7;
+  }
+
+  .public-test__status{
+    font-weight: 700;
+  }
+
+  .public-test__status--ok{
+    color: #8ea8ff;
+  }
+
+  .public-test__status--error{
+    color: #ff7b8e;
+  }
+
+  .public-test__grid{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 18px;
+  }
+
+  .public-test__error{
+    margin-top: 8px;
+    color: #ff93a2;
+    font-size: 14px;
+  }
+
+  .js .public-test__actions--fallback{
+    display: none;
+  }
+
+  @media (max-width: 640px){
+    .public-test{
+      padding: 28px 14px;
+    }
+
+    .public-test__card{
+      padding: 22px 16px;
+    }
+
+    .public-test__choice-group,
+    .public-test__actions{
+      flex-direction: column;
+    }
+
+    .public-test__choice,
+    .public-test__button{
+      width: 100%;
+      min-width: 0;
+    }
+
+    .public-test__grid{
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.js-auto-submit-form').forEach(function (form) {
+      form.querySelectorAll('.js-auto-submit-input').forEach(function (input) {
+        input.addEventListener('change', function () {
+          if (form.dataset.submitting === 'true') return;
+          form.dataset.submitting = 'true';
+
+          setTimeout(function () {
+            form.submit();
+          }, 180);
+        });
+      });
+    });
+  });
+</script>
+{% endblock %}

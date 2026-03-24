@@ -1,0 +1,424 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="dashboard-wrap">
+  <div class="dashboard-header">
+    <div>
+      <h1>{{ titulo_graficas|default:"Panel de Gráficas Internas" }}</h1>
+      <p>Consulta resultados internos con filtros dinámicos en tiempo real.</p>
+    </div>
+  </div>
+
+  <form id="filtrosForm" class="filters-card" onsubmit="return false;">
+    <div class="filters-grid">
+      <div class="field">
+        <label for="fecha">Filtrar por día</label>
+        <input type="date" id="fecha" name="fecha" value="{{ filtro_fecha }}">
+      </div>
+
+      <div class="field">
+        <label for="edad_min">Edad mínima</label>
+        <input type="number" id="edad_min" name="edad_min" value="{{ edad_min }}" min="1" max="120">
+      </div>
+
+      <div class="field">
+        <label for="edad_max">Edad máxima</label>
+        <input type="number" id="edad_max" name="edad_max" value="{{ edad_max }}" min="1" max="120">
+      </div>
+
+      <div class="field">
+        <label for="sexo">Género</label>
+        <select id="sexo" name="sexo">
+          <option value="">Todos</option>
+          {% for valor, texto in sexo_opciones %}
+            <option value="{{ valor }}" {% if sexo == valor %}selected{% endif %}>{{ texto }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="actions">
+        <button type="button" id="btnLimpiar" class="btn btn-light">Limpiar</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span>Total respuestas</span>
+      <strong id="statTotalRespuestas">0</strong>
+    </div>
+    <div class="stat-card">
+      <span>Sesiones</span>
+      <strong id="statTotalSesiones">0</strong>
+    </div>
+    <div class="stat-card">
+      <span>Usuarios</span>
+      <strong id="statTotalPersonas">0</strong>
+    </div>
+    <div class="stat-card">
+      <span>Precisión</span>
+      <strong id="statPrecision">0%</strong>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card chart-card-lg">
+      <div class="chart-title">Correctas vs Incorrectas</div>
+      <div class="chart-box">
+        <canvas id="chartCorrectas"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Respuestas por tipo</div>
+      <div class="chart-box">
+        <canvas id="chartTipo"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Sesiones por destinatario</div>
+      <div class="chart-box">
+        <canvas id="chartDestinatario"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Respuestas por usuario</div>
+      <div class="chart-box">
+        <canvas id="chartUsuario"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Respuestas por género</div>
+      <div class="chart-box">
+        <canvas id="chartGenero"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ dashboard_json|json_script:"dashboard-data" }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const endpoint = window.location.pathname;
+  const form = document.getElementById("filtrosForm");
+  const btnLimpiar = document.getElementById("btnLimpiar");
+
+  const statTotalRespuestas = document.getElementById("statTotalRespuestas");
+  const statTotalSesiones = document.getElementById("statTotalSesiones");
+  const statTotalPersonas = document.getElementById("statTotalPersonas");
+  const statPrecision = document.getElementById("statPrecision");
+
+  const chartInstances = {};
+
+  function baseOptions() {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "top"
+        }
+      }
+    };
+  }
+
+  function destroyChart(id) {
+    if (chartInstances[id]) {
+      chartInstances[id].destroy();
+    }
+  }
+
+  function renderCharts(data) {
+    statTotalRespuestas.textContent = data.total_respuestas || 0;
+    statTotalSesiones.textContent = data.total_sesiones || 0;
+    statTotalPersonas.textContent = data.total_personas || 0;
+    statPrecision.textContent = `${data.precision || 0}%`;
+
+    destroyChart("chartCorrectas");
+    destroyChart("chartTipo");
+    destroyChart("chartDestinatario");
+    destroyChart("chartUsuario");
+    destroyChart("chartGenero");
+
+    chartInstances.chartCorrectas = new Chart(document.getElementById("chartCorrectas"), {
+      type: "doughnut",
+      data: {
+        labels: ["Correctas", "Incorrectas"],
+        datasets: [{
+          data: [data.correctas || 0, data.incorrectas || 0],
+          backgroundColor: ["#2563eb", "#f43f5e"],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        ...baseOptions(),
+        cutout: "65%"
+      }
+    });
+
+    chartInstances.chartTipo = new Chart(document.getElementById("chartTipo"), {
+      type: "bar",
+      data: {
+        labels: (data.respuestas_por_tipo || []).map(item => item.respuesta),
+        datasets: [{
+          label: "Total",
+          data: (data.respuestas_por_tipo || []).map(item => item.total),
+          backgroundColor: ["#0ea5e9", "#8b5cf6"],
+          borderRadius: 10
+        }]
+      },
+      options: {
+        ...baseOptions(),
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    chartInstances.chartDestinatario = new Chart(document.getElementById("chartDestinatario"), {
+      type: "pie",
+      data: {
+        labels: (data.sesiones_por_destinatario || []).map(item => item.destinatario),
+        datasets: [{
+          data: (data.sesiones_por_destinatario || []).map(item => item.total),
+          backgroundColor: ["#14b8a6", "#f59e0b"],
+          borderWidth: 0
+        }]
+      },
+      options: baseOptions()
+    });
+
+    chartInstances.chartUsuario = new Chart(document.getElementById("chartUsuario"), {
+      type: "bar",
+      data: {
+        labels: (data.respuestas_por_usuario || []).map(item => item.usuario__username),
+        datasets: [{
+          label: "Respuestas",
+          data: (data.respuestas_por_usuario || []).map(item => item.total),
+          backgroundColor: "#6366f1",
+          borderRadius: 10
+        }]
+      },
+      options: {
+        ...baseOptions(),
+        indexAxis: "y",
+        scales: {
+          x: { beginAtZero: true }
+        }
+      }
+    });
+
+    chartInstances.chartGenero = new Chart(document.getElementById("chartGenero"), {
+      type: "bar",
+      data: {
+        labels: (data.respuestas_por_genero || []).map(item => item.sexo),
+        datasets: [{
+          label: "Total",
+          data: (data.respuestas_por_genero || []).map(item => item.total),
+          backgroundColor: ["#3b82f6", "#ec4899", "#64748b"],
+          borderRadius: 10
+        }]
+      },
+      options: {
+        ...baseOptions(),
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  async function cargarDashboard() {
+    const params = new URLSearchParams(new FormData(form));
+
+    const response = await fetch(`${endpoint}?${params.toString()}`, {
+      headers: {
+        "X-Requested-With": "XMLHttpRequest"
+      }
+    });
+
+    const data = await response.json();
+    renderCharts(data);
+  }
+
+  function debounce(fn, delay = 300) {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => fn(...args), delay);
+    };
+  }
+
+  const cargarConDebounce = debounce(cargarDashboard, 300);
+
+  form.querySelectorAll("input, select").forEach(el => {
+    el.addEventListener("input", cargarConDebounce);
+    el.addEventListener("change", cargarDashboard);
+  });
+
+  btnLimpiar.addEventListener("click", () => {
+    form.reset();
+    cargarDashboard();
+  });
+
+  const initialData = JSON.parse(document.getElementById("dashboard-data").textContent);
+  renderCharts(initialData);
+</script>
+
+<style>
+  .dashboard-wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 10px 10px;
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .dashboard-header h1 {
+    margin: 0 0 6px 0;
+    font-size: 42px;
+    line-height: 1.1;
+  }
+
+  .dashboard-header p {
+    margin: 0;
+    color: #64748b;
+    font-size: 15px;
+  }
+
+  .filters-card,
+  .stat-card,
+  .chart-card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, .08);
+    border: 1px solid #e5e7eb;
+  }
+
+  .filters-card {
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+
+  .filters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px;
+    align-items: end;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .field label {
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  .field input,
+  .field select {
+    height: 46px;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    padding: 0 14px;
+    font-size: 15px;
+    background: #fff;
+  }
+
+  .actions {
+    display: flex;
+    align-items: end;
+  }
+
+  .btn {
+    height: 46px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .btn-light {
+    background: #f1f5f9;
+    color: #0f172a;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 22px;
+  }
+
+  .stat-card {
+    padding: 20px;
+    text-align: center;
+  }
+
+  .stat-card span {
+    display: block;
+    color: #64748b;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+
+  .stat-card strong {
+    font-size: 34px;
+    color: #0f172a;
+  }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .chart-card {
+    padding: 18px;
+  }
+
+  .chart-card-lg {
+    grid-column: span 2;
+  }
+
+  .chart-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    color: #0f172a;
+  }
+
+  .chart-box {
+    position: relative;
+    height: 360px;
+  }
+
+  @media (max-width: 980px) {
+    .charts-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .chart-card-lg {
+      grid-column: span 1;
+    }
+
+    .dashboard-header h1 {
+      font-size: 32px;
+    }
+  }
+</style>
+{% endblock %}

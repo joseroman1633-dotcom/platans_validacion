@@ -1,0 +1,448 @@
+{% extends "inicio/base.html" %}
+{% load static %}
+
+{% block title %}Acerca | Validación de Plantas{% endblock %}
+
+{% block content %}
+<section class="about-system">
+
+  <article class="card about-system__hero">
+    <div class="about-system__hero-grid">
+      <div class="about-system__hero-copy">
+        <div class="pill">ℹ️ Información del sistema</div>
+
+        <h1 class="about-system__title">¿Qué es Platans Validación?</h1>
+
+        <p class="about-system__lead">
+          Platans Validación es una plataforma diseñada para apoyar la
+          <strong>validación visual de imágenes de plantas</strong>, especialmente en contextos
+          donde es importante diferenciar entre contenido real y contenido generado mediante
+          <strong>inteligencia artificial</strong>.
+        </p>
+
+        <div class="about-system__tags">
+          <span class="about-system__tag">Imágenes de plantas</span>
+          <span class="about-system__tag">Validación visual</span>
+          <span class="about-system__tag">Apoyo académico</span>
+        </div>
+      </div>
+
+      <div class="about-system__hero-media">
+        <div class="about-system__hero-image-box">
+          <img
+            src="{% static 'inicio/acerca.png' %}"
+            alt="Imagen representativa del sistema Platans Validación"
+            class="about-system__hero-image"
+          >
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <div class="about-system__grid about-system__grid--two">
+    <article class="card about-system__panel">
+      <h2 class="about-system__heading">¿Por qué surge esta plataforma?</h2>
+      <p class="about-system__text">
+        El crecimiento en el uso de modelos generativos de imágenes ha incrementado la necesidad
+        de contar con herramientas que permitan evaluar la autenticidad, coherencia y realismo de
+        las imágenes, especialmente en áreas donde la observación visual resulta importante,
+        como el estudio de las plantas.
+      </p>
+      <p class="about-system__text">
+        En este contexto, Platans Validación surge como una propuesta para ofrecer un entorno claro,
+        accesible y útil, que facilite la revisión y comparación de imágenes reales y sintéticas
+        dentro de un escenario académico y tecnológico.
+      </p>
+    </article>
+
+    <article class="card about-system__panel about-system__panel--accent">
+      <h2 class="about-system__heading">¿Qué permite hacer?</h2>
+      <ul class="about-system__checklist">
+        <li>Analizar imágenes de plantas con fines de validación visual.</li>
+        <li>Comparar imágenes reales y generadas por inteligencia artificial.</li>
+        <li>Apoyar actividades académicas y procesos de investigación.</li>
+        <li>Fortalecer el análisis visual en estudios relacionados con biodiversidad y botánica.</li>
+      </ul>
+    </article>
+  </div>
+
+  <div class="about-system__grid about-system__grid--three">
+    <article class="card about-system__feature">
+      <div class="about-system__feature-icon">🌿</div>
+      <h3 class="about-system__feature-title">Validación visual</h3>
+      <p class="about-system__feature-text">
+        Permite revisar si una imagen presenta características visuales consistentes con una planta real.
+      </p>
+    </article>
+
+    <article class="card about-system__feature">
+      <div class="about-system__feature-icon">🤖</div>
+      <h3 class="about-system__feature-title">Comparación con IA</h3>
+      <p class="about-system__feature-text">
+        Facilita distinguir entre imágenes auténticas y aquellas producidas por modelos generativos.
+      </p>
+    </article>
+
+    <article class="card about-system__feature">
+      <div class="about-system__feature-icon">🎓</div>
+      <h3 class="about-system__feature-title">Apoyo académico</h3>
+      <p class="about-system__feature-text">
+        Sirve como herramienta complementaria para actividades de estudio, validación e investigación.
+      </p>
+    </article>
+  </div>
+
+  <article class="card about-system__panel">
+    <h2 class="about-system__heading">Objetivos principales</h2>
+
+    <div class="about-system__objectives">
+      <div class="about-system__objective">
+        <div class="about-system__number">01</div>
+        <div>
+          <h3 class="about-system__objective-title">Apoyar la validación de imágenes</h3>
+          <p class="about-system__objective-text">
+            Proporcionar un entorno que contribuya a revisar imágenes de plantas con mayor claridad,
+            criterio visual y organización.
+          </p>
+        </div>
+      </div>
+
+      <div class="about-system__objective">
+        <div class="about-system__number">02</div>
+        <div>
+          <h3 class="about-system__objective-title">Facilitar la comparación visual</h3>
+          <p class="about-system__objective-text">
+            Permitir la comparación entre imágenes reales y generadas por inteligencia artificial
+            para una mejor evaluación.
+          </p>
+        </div>
+      </div>
+
+      <div class="about-system__objective">
+        <div class="about-system__number">03</div>
+        <div>
+          <h3 class="about-system__objective-title">Servir como apoyo académico</h3>
+          <p class="about-system__objective-text">
+            Aportar una herramienta útil para tareas de investigación, aprendizaje y análisis visual
+            en contextos educativos.
+          </p>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <article class="card about-system__note">
+    <h2 class="about-system__heading">Alcance del sistema</h2>
+    <p class="about-system__text">
+      Platans Validación no reemplaza el criterio especializado. Su propósito es servir como una
+      herramienta de apoyo para mejorar la observación, la comparación y el análisis de imágenes
+      dentro de un entorno académico, tecnológico y de investigación.
+    </p>
+  </article>
+
+</section>
+
+<style>
+  .about-system{
+    display: grid;
+    gap: 18px;
+  }
+
+  .about-system__hero{
+    position: relative;
+    overflow: hidden;
+    padding: 28px;
+    background:
+      radial-gradient(520px 220px at 100% 0%, rgba(91,124,255,.16), transparent 70%),
+      radial-gradient(480px 220px at 0% 100%, rgba(56,191,248,.10), transparent 70%),
+      rgba(17, 24, 39, 0.72);
+  }
+
+  .about-system__hero-grid{
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
+    gap: 22px;
+    align-items: center;
+  }
+
+  .about-system__hero-copy{
+    min-width: 0;
+  }
+
+  .about-system__title{
+    margin: 14px 0 12px;
+    font-size: clamp(28px, 3vw, 42px);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+
+  .about-system__lead{
+    margin: 0;
+    max-width: 68ch;
+    color: rgba(255,255,255,.82);
+    font-size: 16px;
+    line-height: 1.85;
+    text-align: justify;
+    text-align-last: left;
+  }
+
+  .about-system__tags{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .about-system__tag{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.10);
+    color: rgba(255,255,255,.88);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .about-system__hero-media{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .about-system__hero-image-box{
+    width: 100%;
+    min-height: 300px;
+    border-radius: 22px;
+    overflow: hidden;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)),
+      rgba(7, 12, 22, 0.72);
+    border: 1px solid rgba(255,255,255,.10);
+    box-shadow: 0 18px 34px rgba(0,0,0,.24);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  .about-system__hero-image{
+    width: 100%;
+    height: 100%;
+    max-height: 360px;
+    object-fit: contain;
+    border-radius: 16px;
+    display: block;
+  }
+
+  .about-system__grid{
+    display: grid;
+    gap: 16px;
+  }
+
+  .about-system__grid--two{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .about-system__grid--three{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .about-system__panel{
+    padding: 24px;
+  }
+
+  .about-system__panel--accent{
+    background:
+      radial-gradient(400px 180px at 100% 0%, rgba(91,124,255,.12), transparent 72%),
+      rgba(17, 24, 39, 0.72);
+  }
+
+  .about-system__heading{
+    margin: 0 0 12px;
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: #fff;
+  }
+
+  .about-system__text{
+    margin: 0 0 12px;
+    color: rgba(255,255,255,.78);
+    font-size: 15px;
+    line-height: 1.9;
+    text-align: justify;
+    text-align-last: left;
+  }
+
+  .about-system__text:last-child{
+    margin-bottom: 0;
+  }
+
+  .about-system__checklist{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px;
+  }
+
+  .about-system__checklist li{
+    position: relative;
+    padding-left: 18px;
+    color: rgba(255,255,255,.82);
+    line-height: 1.8;
+    font-size: 15px;
+    text-align: justify;
+    text-align-last: left;
+  }
+
+  .about-system__checklist li::before{
+    content: "";
+    position: absolute;
+    left: 0;
+    top: .75em;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #8ea8ff;
+    box-shadow: 0 0 12px rgba(142,168,255,.28);
+  }
+
+  .about-system__feature{
+    padding: 22px;
+    transition: transform .16s ease, border-color .16s ease, background .16s ease;
+  }
+
+  .about-system__feature:hover{
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,.14);
+    background: rgba(17,24,39,.78);
+  }
+
+  .about-system__feature-icon{
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    background: rgba(91,124,255,.14);
+    border: 1px solid rgba(91,124,255,.28);
+    margin-bottom: 14px;
+  }
+
+  .about-system__feature-title{
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: #fff;
+  }
+
+  .about-system__feature-text{
+    margin: 0;
+    color: rgba(255,255,255,.76);
+    line-height: 1.75;
+    font-size: 14px;
+    text-align: justify;
+    text-align-last: left;
+  }
+
+  .about-system__objectives{
+    display: grid;
+    gap: 16px;
+    margin-top: 10px;
+  }
+
+  .about-system__objective{
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+    padding: 16px;
+    border-radius: 16px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+  }
+
+  .about-system__number{
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(91,124,255,.14);
+    border: 1px solid rgba(91,124,255,.30);
+    color: #cfe0ff;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+  }
+
+  .about-system__objective-title{
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: #fff;
+  }
+
+  .about-system__objective-text{
+    margin: 0;
+    color: rgba(255,255,255,.78);
+    line-height: 1.8;
+    font-size: 14px;
+    text-align: justify;
+    text-align-last: left;
+  }
+
+  .about-system__note{
+    padding: 24px;
+    background:
+      linear-gradient(135deg, rgba(56,191,248,.08), rgba(255,255,255,.03)),
+      rgba(17,24,39,.72);
+  }
+
+  @media (max-width: 920px){
+    .about-system__hero-grid,
+    .about-system__grid--two,
+    .about-system__grid--three{
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px){
+    .about-system__hero,
+    .about-system__panel,
+    .about-system__feature,
+    .about-system__note{
+      padding: 20px 16px;
+    }
+
+    .about-system__objective{
+      grid-template-columns: 1fr;
+    }
+
+    .about-system__number{
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      font-size: 18px;
+    }
+
+    .about-system__title{
+      font-size: 28px;
+    }
+
+    .about-system__lead{
+      font-size: 15px;
+    }
+
+    .about-system__hero-image-box{
+      min-height: 220px;
+    }
+  }
+</style>
+{% endblock %}

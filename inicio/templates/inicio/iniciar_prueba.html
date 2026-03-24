@@ -1,0 +1,435 @@
+{% extends "inicio/base.html" %}
+
+{% block content %}
+<script>
+  document.documentElement.classList.add('js');
+</script>
+
+<section class="test-center">
+  <div class="test-center__card">
+
+    {% if sin_imagenes %}
+      <span class="test-center__badge">Centro de pruebas</span>
+      <h1 class="test-center__title">No hay imágenes disponibles</h1>
+      <p class="test-center__subtitle">
+        Aún no existen imágenes activas para iniciar una prueba.
+      </p>
+
+      <div class="test-center__actions">
+        <a class="test-center__button test-center__button--ghost" href="{% url 'home' %}">
+          Volver a inicio
+        </a>
+      </div>
+
+    {% elif mostrar_feedback %}
+      <span class="test-center__badge">Resultado</span>
+      <h1 class="test-center__title">Resultado de tu respuesta</h1>
+
+      <p class="test-center__subtitle">
+        Tu respuesta: <strong>{{ respuesta_usuario }}</strong><br>
+        Respuesta correcta: <strong>{{ respuesta_correcta }}</strong><br>
+        Estado:
+        {% if es_correcta %}
+          <span class="test-center__status test-center__status--ok">Correcta</span>
+        {% else %}
+          <span class="test-center__status test-center__status--error">Incorrecta</span>
+        {% endif %}
+      </p>
+
+      <div class="test-center__image-wrap">
+        <img src="{{ imagen.imagen.url }}" alt="{{ imagen.nombre }}" class="test-center__image">
+      </div>
+
+      <div class="test-center__actions">
+        <a href="{% url 'iniciar_prueba' %}" class="test-center__button test-center__button--primary">
+          Continuar
+        </a>
+      </div>
+
+    {% elif seleccionar_destinatario %}
+      <span class="test-center__badge">Finalizar prueba</span>
+      <h1 class="test-center__title">Selecciona el destinatario</h1>
+      <p class="test-center__subtitle">
+        Total: {{ total }}<br>
+        Correctas: {{ correctas }}<br>
+        Incorrectas: {{ incorrectas }}
+      </p>
+
+      <form method="post" class="test-center__form js-auto-submit-form">
+        {% csrf_token %}
+        <input type="hidden" name="accion" value="finalizar">
+
+        <div class="test-center__choice-group">
+          <input
+            type="radio"
+            id="destinatario_jorge"
+            name="destinatario"
+            value="DR_JORGE"
+            class="test-center__choice-input js-auto-submit-input"
+            required
+          >
+          <label for="destinatario_jorge" class="test-center__choice">Dr. Jorge</label>
+
+          <input
+            type="radio"
+            id="destinatario_luciano"
+            name="destinatario"
+            value="LUCIANO"
+            class="test-center__choice-input js-auto-submit-input"
+          >
+          <label for="destinatario_luciano" class="test-center__choice">Luciano</label>
+        </div>
+
+        <div class="test-center__actions test-center__actions--fallback">
+          <button type="submit" class="test-center__button test-center__button--primary">
+            Enviar resultados
+          </button>
+        </div>
+      </form>
+
+    {% elif prueba_terminada %}
+      <span class="test-center__badge">Prueba finalizada</span>
+
+      <h1 class="test-center__title">
+        ¡Gracias por participar!
+      </h1>
+
+      <p class="test-center__subtitle">
+        Tus respuestas han sido registradas correctamente y enviadas para revisión.
+      </p>
+
+      <div class="test-center__grid">
+        <div class="test-center__item">
+          <h3>Resultados de tu prueba</h3>
+          <p>
+            Total evaluado: {{ total }}<br>
+            Correctas: {{ correctas }}<br>
+            Incorrectas: {{ incorrectas }}
+          </p>
+        </div>
+
+        <div class="test-center__item">
+          <h3>Destinatario</h3>
+          <p>
+            {% if destinatario == "DR_JORGE" %}
+              Dr. Jorge
+            {% else %}
+              Luciano
+            {% endif %}
+          </p>
+        </div>
+      </div>
+
+      <p class="test-center__subtitle">
+        Tu participación ayuda a mejorar la calidad del sistema de validación
+        de imágenes y fortalece el proceso de entrenamiento del modelo de inteligencia artificial.
+      </p>
+
+      <div class="test-center__actions">
+        <a href="{% url 'iniciar_prueba' %}" class="test-center__button test-center__button--primary">
+          Realizar otra prueba
+        </a>
+
+        <a href="{% url 'home' %}" class="test-center__button test-center__button--ghost">
+          Volver al inicio
+        </a>
+      </div>
+
+    {% else %}
+      <span class="test-center__badge">Centro de pruebas</span>
+      <h1 class="test-center__title">Clasificación de imágenes</h1>
+      <p class="test-center__subtitle">
+        Observa la imagen y selecciona la opción que consideres correcta.
+      </p>
+
+      <p class="test-center__progress">
+        Imagen {{ numero_actual }} de {{ total }}
+      </p>
+
+      <div class="test-center__image-wrap">
+        <img src="{{ imagen.imagen.url }}" alt="{{ imagen.nombre }}" class="test-center__image">
+      </div>
+
+      <form method="post" class="test-center__form js-auto-submit-form">
+        {% csrf_token %}
+        <input type="hidden" name="accion" value="responder">
+        <input type="hidden" name="imagen_id" value="{{ imagen.id }}">
+
+        <div class="test-center__choice-group">
+          <input
+            type="radio"
+            id="respuesta_ia"
+            name="respuesta"
+            value="IA"
+            class="test-center__choice-input js-auto-submit-input"
+            required
+          >
+          <label for="respuesta_ia" class="test-center__choice">IA</label>
+
+          <input
+            type="radio"
+            id="respuesta_sintetica"
+            name="respuesta"
+            value="NO_IA"
+            class="test-center__choice-input js-auto-submit-input"
+          >
+          <label for="respuesta_sintetica" class="test-center__choice">SINTÉTICA</label>
+        </div>
+
+        <div class="test-center__actions test-center__actions--fallback">
+          <button type="submit" class="test-center__button test-center__button--primary">
+            Continuar
+          </button>
+        </div>
+      </form>
+    {% endif %}
+
+  </div>
+</section>
+
+<style>
+  .test-center{
+    min-height: calc(100vh - 140px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 56px 16px;
+  }
+
+  .test-center__card{
+    width:min(900px, 100%);
+    background: rgba(8, 13, 24, .72);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 22px;
+    padding: 30px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 24px 70px rgba(0,0,0,.28);
+  }
+
+  .test-center__badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 12px;
+    letter-spacing:.08em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(91,124,255,.35);
+    background: rgba(91,124,255,.12);
+    color: #dbe4ff;
+    margin-bottom: 14px;
+  }
+
+  .test-center__title{
+    margin: 0 0 10px;
+    font-size: clamp(28px, 3.2vw, 40px);
+    color: #fff;
+  }
+
+  .test-center__subtitle{
+    margin: 0 0 18px;
+    color: rgba(255,255,255,.74);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  .test-center__progress{
+    color: #8ea8ff;
+    font-weight: 700;
+    margin-bottom: 18px;
+    text-align: center;
+  }
+
+  .test-center__image-wrap{
+    width: 100%;
+    display:flex;
+    justify-content:center;
+    margin: 22px 0;
+  }
+
+  .test-center__image{
+    max-width: 100%;
+    max-height: 420px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,.10);
+    object-fit: contain;
+    background: rgba(255,255,255,.04);
+    padding: 8px;
+  }
+
+  .test-center__form{
+    margin-top: 12px;
+  }
+
+  .test-center__choice-group{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .test-center__choice-input{
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .test-center__choice{
+    min-width: 150px;
+    padding: 14px 22px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.12);
+    color: #fff;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    transition: transform .2s ease, background .25s ease, border-color .25s ease, box-shadow .25s ease;
+  }
+
+  .test-center__choice:hover{
+    background: rgba(255,255,255,.10);
+    transform: translateY(-1px);
+  }
+
+  .test-center__choice-input:checked + .test-center__choice{
+    background: rgba(91,124,255,.18);
+    border-color: rgba(91,124,255,.72);
+    box-shadow: 0 0 0 3px rgba(91,124,255,.18);
+    color: #fff;
+  }
+
+  .test-center__choice-input:focus-visible + .test-center__choice{
+    box-shadow: 0 0 0 3px rgba(91,124,255,.18);
+  }
+
+  .test-center__actions{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+  }
+
+  .test-center__button{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width: 180px;
+    padding: 13px 22px;
+    border-radius: 14px;
+    text-decoration:none;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: transform .2s ease, background .25s ease, border-color .25s ease, box-shadow .25s ease;
+  }
+
+  .test-center__button:hover{
+    transform: translateY(-1px);
+  }
+
+  .test-center__button--primary{
+    background: rgba(91,124,255,.18);
+    border-color: rgba(91,124,255,.40);
+    color: #fff;
+  }
+
+  .test-center__button--primary:hover{
+    background: rgba(91,124,255,.26);
+    box-shadow: 0 12px 24px rgba(91,124,255,.18);
+  }
+
+  .test-center__button--ghost{
+    background: rgba(255,255,255,.06);
+    border-color: rgba(255,255,255,.12);
+    color: #fff;
+  }
+
+  .test-center__button--ghost:hover{
+    background: rgba(255,255,255,.10);
+  }
+
+  .test-center__status{
+    font-weight: 700;
+  }
+
+  .test-center__status--ok{
+    color: #8ea8ff;
+  }
+
+  .test-center__status--error{
+    color: #ff7b8e;
+  }
+
+  .test-center__grid{
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap:16px;
+    margin:20px 0;
+  }
+
+  .test-center__item{
+    background: rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    padding:18px;
+    color: rgba(255,255,255,.84);
+    line-height: 1.7;
+  }
+
+  .test-center__item h3{
+    margin: 0 0 10px;
+    color: #fff;
+  }
+
+  .js .test-center__actions--fallback{
+    display: none;
+  }
+
+  @media (max-width: 640px){
+    .test-center{
+      padding: 28px 14px;
+    }
+
+    .test-center__card{
+      padding: 22px 16px;
+    }
+
+    .test-center__choice-group,
+    .test-center__actions{
+      flex-direction: column;
+    }
+
+    .test-center__choice,
+    .test-center__button{
+      width: 100%;
+      min-width: 0;
+    }
+
+    .test-center__grid{
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.js-auto-submit-form').forEach(function (form) {
+      form.querySelectorAll('.js-auto-submit-input').forEach(function (input) {
+        input.addEventListener('change', function () {
+          if (form.dataset.submitting === 'true') return;
+          form.dataset.submitting = 'true';
+
+          setTimeout(function () {
+            form.submit();
+          }, 180);
+        });
+      });
+    });
+  });
+</script>
+{% endblock %}

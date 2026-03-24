@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: platans-validacion
+    runtime: python
+    plan: free
+    buildCommand: ./build.sh
+    startCommand: gunicorn platans_validacion.wsgi:application
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: false
+      - key: USE_CLOUDINARY
+        value: true
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: ALLOWED_HOSTS
+        sync: false
+      - key: CSRF_TRUSTED_ORIGINS
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: CLOUDINARY_URL
+        sync: false
