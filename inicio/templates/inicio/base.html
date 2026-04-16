@@ -453,20 +453,49 @@
       color: rgba(255,255,255,0.90);
     }
 
-    .auth__input{
-      width: 100%;
-      padding: 11px 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(0,0,0,0.25);
-      color: #fff;
-      outline: none;
-    }
+    .auth__input,
+.auth__field select,
+.auth__field textarea {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.12);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
 
-    .auth__input:focus{
-      border-color: var(--focus-border);
-      box-shadow: 0 0 0 3px var(--focus);
-    }
+.auth__input,
+.auth__field textarea {
+  background: rgba(0,0,0,0.25);
+  color: #fff;
+}
+
+.auth__field select {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #d0d7de !important;
+  background-image: linear-gradient(45deg, transparent 50%, #000 50%),
+                    linear-gradient(135deg, #000 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(50% - 3px),
+                       calc(100% - 12px) calc(50% - 3px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 38px;
+}
+
+.auth__input:focus,
+.auth__field select:focus,
+.auth__field textarea:focus {
+  border-color: var(--focus-border);
+  box-shadow: 0 0 0 3px var(--focus);
+}
+
+.auth__field select option {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
 
     .auth__alert{
       padding: 10px 12px;
