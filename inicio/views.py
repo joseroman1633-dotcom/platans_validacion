@@ -100,10 +100,10 @@ def iniciar_prueba(request):
                     es_correcta=es_correcta,
                 )
 
-                respuesta_usuario_label = "IA" if respuesta == "IA" else "SINTÉTICA"
+                respuesta_usuario_label = "IA" if respuesta == "IA" else "NO IA"
                 respuesta_correcta_label = (
-                    "IA" if imagen.tipo_origen == "IA" else "SINTÉTICA"
-                )
+                "IA" if imagen.tipo_origen == "IA" else "NO IA"
+            )
 
                 request.session["feedback_data"] = {
                     "imagen_id": imagen.id,
@@ -247,9 +247,9 @@ def iniciar_prueba_publica(request):
                     es_correcta=es_correcta,
                 )
 
-                respuesta_usuario_label = "IA" if respuesta == "IA" else "SINTÉTICA"
+                respuesta_usuario_label = "IA" if respuesta == "IA" else "NO IA"
                 respuesta_correcta_label = (
-                    "IA" if imagen.tipo_origen == "IA" else "SINTÉTICA"
+                "IA" if imagen.tipo_origen == "IA" else "NO IA"
                 )
 
                 request.session["feedback_data_publica"] = {
@@ -462,9 +462,9 @@ def _construir_dashboard_interno(respuestas_qs, sesiones_qs):
             conteo_tipo["NO_IA"] += item["total"]
 
     respuestas_por_tipo = [
-        {"respuesta": "IA", "total": conteo_tipo["IA"]},
-        {"respuesta": "SINTÉTICA", "total": conteo_tipo["NO_IA"]},
-    ]
+    {"respuesta": "IA", "total": conteo_tipo["IA"]},
+    {"respuesta": "NO IA", "total": conteo_tipo["NO_IA"]},
+]
 
     sesiones_por_destinatario = list(
         sesiones_qs
@@ -542,9 +542,9 @@ def _construir_dashboard_publico(respuestas_qs, sesiones_qs):
             conteo_tipo["NO_IA"] += item["total"]
 
     respuestas_por_tipo = [
-        {"respuesta": "IA", "total": conteo_tipo["IA"]},
-        {"respuesta": "SINTÉTICA", "total": conteo_tipo["NO_IA"]},
-    ]
+    {"respuesta": "IA", "total": conteo_tipo["IA"]},
+    {"respuesta": "NO IA", "total": conteo_tipo["NO_IA"]},
+]
 
     sesiones_por_destinatario = list(
         sesiones_qs
