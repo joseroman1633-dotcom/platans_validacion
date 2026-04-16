@@ -46,7 +46,7 @@ class SesionPrueba(models.Model):
 class PruebaImagenRespuesta(models.Model):
     RESPUESTA_CHOICES = [
         ('IA', 'IA'),
-        ('NO_IA', 'SINTÉTICA'),
+        ('NO_IA', 'NO IA'),
     ]
 
     sesion = models.ForeignKey(
@@ -98,7 +98,7 @@ class SesionPruebaPublica(models.Model):
 class PruebaImagenRespuestaPublica(models.Model):
     RESPUESTA_CHOICES = [
         ('IA', 'IA'),
-        ('NO_IA', 'SINTÉTICA'),
+        ('NO_IA', 'NO IA'),
     ]
 
     sesion = models.ForeignKey(

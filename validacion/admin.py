@@ -14,12 +14,20 @@ from .models import (
 )
 
 
+def respuesta_legible(valor):
+    if valor in ["NO_IA", "SINTETICA", "SINTÉTICA"]:
+        return "NO IA"
+    if valor == "IA":
+        return "IA"
+    return valor
+
+
 @admin.register(ImagenValidacion)
 class ImagenValidacionAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "nombre",
-        "tipo_origen",
+        "tipo_origen_legible",
         "seleccionada",
         "subida_por",
         "fecha_subida",
@@ -41,6 +49,10 @@ class ImagenValidacionAdmin(admin.ModelAdmin):
     exclude = ("imagen_base64",)
 
     change_list_template = "admin/validacion/imagenvalidacion/change_list.html"
+
+    @admin.display(description="Tipo origen")
+    def tipo_origen_legible(self, obj):
+        return respuesta_legible(obj.tipo_origen)
 
     def get_urls(self):
         urls = super().get_urls()
@@ -90,7 +102,7 @@ class ImagenValidacionAdmin(admin.ModelAdmin):
                             subida_por=request.user,
                         )
                         total_ok += 1
-                    except Exception as exc:  # noqa: BLE001
+                    except Exception as exc:
                         errores.append(f"{archivo.name}: {exc}")
 
                 if total_ok:
@@ -152,7 +164,7 @@ class PruebaImagenRespuestaAdmin(admin.ModelAdmin):
         "sesion",
         "usuario",
         "imagen",
-        "respuesta",
+        "respuesta_legible_admin",
         "es_correcta",
         "fecha_respuesta",
     )
@@ -167,6 +179,10 @@ class PruebaImagenRespuestaAdmin(admin.ModelAdmin):
         "usuario__username",
         "imagen__nombre",
     )
+
+    @admin.display(description="Respuesta")
+    def respuesta_legible_admin(self, obj):
+        return respuesta_legible(obj.respuesta)
 
 
 @admin.register(SesionPruebaPublica)
@@ -199,7 +215,7 @@ class PruebaImagenRespuestaPublicaAdmin(admin.ModelAdmin):
         "sesion",
         "participante",
         "imagen",
-        "respuesta",
+        "respuesta_legible_admin",
         "es_correcta",
         "fecha_respuesta",
     )
@@ -215,3 +231,7 @@ class PruebaImagenRespuestaPublicaAdmin(admin.ModelAdmin):
         "participante__correo",
         "imagen__nombre",
     )
+
+    @admin.display(description="Respuesta")
+    def respuesta_legible_admin(self, obj):
+        return respuesta_legible(obj.respuesta)
