@@ -6,13 +6,13 @@ from inicio.models import ParticipantePublico
 class ImagenValidacion(models.Model):
     TIPO_CHOICES = [
         ('IA', 'Imagen generada por IA'),
-        ('NO_IA'),
+        ('NO_IA', 'NO IA'),
     ]
 
     nombre = models.CharField(max_length=255)
     imagen = models.ImageField(upload_to='imagenes_validacion/')
     imagen_base64 = models.TextField(blank=True, null=True)
-    tipo_origen = models.CharField(max_length=10, choices=TIPO_CHOICES)
+    tipo_origen = models.CharField(max_length=20, choices=TIPO_CHOICES)
     seleccionada = models.BooleanField(default=False)
     subida_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     fecha_subida = models.DateTimeField(auto_now_add=True)
