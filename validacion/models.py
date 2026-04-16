@@ -6,7 +6,7 @@ from inicio.models import ParticipantePublico
 class ImagenValidacion(models.Model):
     TIPO_CHOICES = [
         ('IA', 'Imagen generada por IA'),
-        ('NO_IA', 'Sintética'),
+        ('NO_IA'),
     ]
 
     nombre = models.CharField(max_length=255)
